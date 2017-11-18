@@ -134,9 +134,6 @@ class TwitterSearch(metaclass=ABCMeta):
         """
         soup = BeautifulSoup(items_html, "html.parser")
         tweets = []
-        #print("##################################")
-        #print (str(items_html))
-        #print("##################################")
         
 
         #########
