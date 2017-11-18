@@ -405,7 +405,7 @@ class TwitterSlicer(TwitterSearch):
                 outputFile.write(('\n%s;%s;%d;%d;"%s";%s;%s;%s;%s;%s;%s' % (tweet['user_screen_name'], t.strftime(fmt), tweet['retweets'], tweet['favorites'], tweet['text'],tweet['emoticons'],tweet['location'],tweet['mentions'],tweet['hashtags'],tweet['tweet_id'],tweet['permalink'])))
         outputFile.close()
         print("Last date analyzed: " + str(date))
-        print("Added more " + str(self.counter) + " tweets")
+        print("Number of tweets collected until now: " + str(self.counter))
 
 
         return True
@@ -419,24 +419,28 @@ class TwitterSlicer(TwitterSearch):
 if __name__ == '__main__':
     log.basicConfig(level=log.INFO)
 
-    search_query = "#datamining2017daniele"
+    #search_query = "#datamining2017daniele"
+    search_query = '#cataluña OR #catalunya OR #independencia OR #independenciacatalunya OR #independenciadecataluña OR #viscacatalunya OR #independenciacataluña OR #puigdemont OR #barcelona OR #referéndum OR #carlespuigdemont OR #referendum OR #ciudadanos'  # this is what we're searching for
     rate_delay_seconds = 0
     error_delay_seconds = 5
 
     # Example of using TwitterSearch
-    twit = TwitterSearchImpl(rate_delay_seconds, error_delay_seconds, None)
+    #twit = TwitterSearchImpl(rate_delay_seconds, error_delay_seconds, None)
     #twit.search(search_query)
 
     # Example of using TwitterSlice
     # Format date: yyyy-mm-dd
-    sinceDate = "2017-10-01" # Lower bound date
-    untilDate = "2017-11-15" # Upper bound date
+    sinceDate = "2017-08-30" # Lower bound date
+    untilDate = "2017-09-30" # Upper bound date
     select_tweets_since = datetime.datetime.strptime(sinceDate, '%Y-%m-%d')
     select_tweets_until = datetime.datetime.strptime(untilDate, '%Y-%m-%d')
     threads = 10
 
     query = search_query
     query = query.replace("#", "_")
+    if " " in query:
+        query = query.split(" ")[0]
+        
     TwitterSlicer.outputFileName = "output" + query + "_s_" + sinceDate + "_u_" + untilDate + ".csv"
     TwitterSlicer.initFile(TwitterSlicer.outputFileName)
 
