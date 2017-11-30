@@ -1,0 +1,7 @@
+Split 1 è lo script che si occupa di prendere i tweet con gli hashtag #piquet ecc..
+Split 2 è quello che si occupa degli hashtag #cataluna ecc..
+
+Cambiare le date all'interno dello script.
+
+Input: le date e gli hashtag (si devono modificare i dati all'interno del main)
+Output: un csv con un tweet per entry.
