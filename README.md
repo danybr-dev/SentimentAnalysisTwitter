@@ -1,4 +1,4 @@
-# SentimentAnalysisTwitter
+# Sentiment-Analysis-Twitter
 ==============
 
 **Sentiment Analysis Twitter** is a project for the course of Data Science
