@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[45]:
+# In[1]:
 
 
 import plotly
@@ -12,6 +12,7 @@ from sklearn.naive_bayes import BernoulliNB
 from sklearn.ensemble import RandomForestClassifier
 from xgboost import XGBClassifier as XGBoostClassifier
 from TwitterFunc import *
+from wordCloud import *
 from collections import Counter
 import nltk
 import pandas as pd
@@ -19,58 +20,17 @@ from time import time
 from sklearn.metrics import f1_score, precision_score, recall_score, accuracy_score
 from sklearn.model_selection import train_test_split, cross_val_score, GridSearchCV, RandomizedSearchCV
 import numpy as np
+import csv
 
-def log(x):
-    #can be used to write to log file
-    print(x)
+#import plotly.plotly as py 
+#import plotly.tools as tls 
+#import plotly.graph_objs as go
 
-def test_classifier(X_train, y_train, X_test, y_test, classifier):
-    if __name__=='__main__':
-        log("")
-        log("===============================================")
-        classifier_name = str(type(classifier).__name__)
-        log("Testing " + classifier_name)
-        now = time()
-        list_of_labels = sorted(list(set(y_train)))
-        model = classifier.fit(X_train, y_train)
-        log("Learing time {0}s".format(time() - now))
-        now = time()
-        predictions = model.predict(X_test)
-        log("Predicting time {0}s".format(time() - now))
-
-        precision = precision_score(y_test, predictions, average=None, pos_label=None, labels=list_of_labels)
-        recall = recall_score(y_test, predictions, average=None, pos_label=None, labels=list_of_labels)
-        accuracy = accuracy_score(y_test, predictions)
-        f1 = f1_score(y_test, predictions, average=None, pos_label=None, labels=list_of_labels)
-        log("=================== Results ===================")
-        log("             Negative    Neutral    Positive")
-        log("F1       " + str(f1))
-        log("Precision" + str(precision))
-        log("Recall   " + str(recall))
-        log("Accuracy " + str(accuracy))
-        log("===============================================")
-
-        return precision, recall, accuracy, f1
-
-def cv(classifier, X_train, y_train):
-    if __name__=='__main__':
-        log("===============================================")
-        classifier_name = str(type(classifier).__name__)
-        now = time()
-        log("Crossvalidating " + classifier_name + "...")
-        accuracy = [cross_val_score(classifier, X_train, y_train, cv=3, n_jobs=1)]
-        log("Crosvalidation completed in {0}s".format(time() - now))
-        log("Accuracy: " + str(accuracy[0]))
-        log("Average accuracy: " + str(np.array(accuracy[0]).mean()))
-        log("===============================================")
-        return accuracy
+#tls.set_credentials_file(username="danybr92", api_key = 'hfUIzJvZlRRk1PKFLkRP')
+plotly.offline.init_notebook_mode(connected=True)
 
 
-# plotly configuration
-plotly.offline.init_notebook_mode()
-
-
-# In[46]:
+# In[2]:
 
 
 import random
@@ -78,7 +38,7 @@ seed = 666
 random.seed(seed)
 
 
-# In[47]:
+# In[3]:
 
 
 auto_open = False
@@ -89,19 +49,23 @@ do_XGBoost = True
 plot_all = True
 
 
-# In[48]:
+# In[4]:
 
 
 
 data = TwitterData_Initialize()
-data.initialize("data/train.txt", is_spain = True)
+data.initialize("data/test_lan_ca.txt", is_spain = False)
+#data.initialize("data/train_original.txt", is_spain = True)
+#data.initialize("data/train_votarem.txt", is_spain = True)
+#data.initialize("data/train_no_votarem.txt", is_spain = True)
+#data.initialize("data/train_votarem_catalunya.txt", is_spain = True)
+#data.initialize("data/train_no_votarem_catalunya.txt", is_spain = True)
 
-print('----------------------------------------------------------------------')
-print('initial data is\n'+str(data.processed_data.head(5)))
-print('----------------------------------------------------------------------\n\n')
+#initial data 
+data.processed_data.head(10)
 
 
-# In[ ]:
+# In[5]:
 
 
 '''
@@ -124,9 +88,10 @@ if plot_all:
     "data":dist, 
     "layout":graph_objs.Layout(title="Sentiment type distribution in training set")})
 
+    
 
 
-# In[7]:
+# In[6]:
 
 
 '''
@@ -141,12 +106,10 @@ method in proper order.
 data = TwitterData_Cleansing(data)
 data.cleanup(TwitterCleanuper())
 
-print('----------------------------------------------------------------------')
-print('data after cleansing\n'+str(data.processed_data.head(5)))
-print('----------------------------------------------------------------------')
+data.processed_data.head(10)
 
 
-# In[ ]:
+# In[7]:
 
 
 '''
@@ -165,12 +128,11 @@ data = TwitterData_TokenStem(data)
 data.tokenize()
 data.stem()
 
-print('----------------------------------------------------------------------')
-print('data after tokenization & stemming\n'+str(data.processed_data.head(5)))
-print('----------------------------------------------------------------------\n\n')
+#data after tokenization & stemming
+data.processed_data.head(10)
 
 
-# In[ ]:
+# In[8]:
 
 
 '''
@@ -184,12 +146,12 @@ words = Counter()
 for idx in data.processed_data.index:
     words.update(data.processed_data.loc[idx, "text"])
 
-print('----------------------------------------------------------------------')
-print('the most common words are:\n'+str(words.most_common(10)))
-print('----------------------------------------------------------------------\n\n')
+
+#the most common words 
+words.most_common(10)
 
 
-# In[87]:
+# In[9]:
 
 
 '''
@@ -204,12 +166,12 @@ for idx, stop_word in enumerate(stopwords):
     if stop_word not in whitelist:
         del words[stop_word]
 
-print('----------------------------------------------------------------------')
-print('the most common words after delition of spanish stopwords are:\n'+str(words.most_common(10)))
-print('----------------------------------------------------------------------\n\n')
+
+#the most common words after delition of spanish stopwords
+words.most_common(10)
 
 
-# In[68]:
+# In[10]:
 
 
 stopwords=nltk.corpus.stopwords.words("english")
@@ -223,12 +185,13 @@ print('the most common words after delition of spanish and english stopwords are
 print('----------------------------------------------------------------------\n\n')
 
 
-# In[69]:
+# In[11]:
 
 
 data = TwitterData_Wordlist(data)
 data.build_wordlist()
 
+    
 if plot_all :
     words = pd.read_csv("data/wordlist.csv")
     x_words = list(words.loc[0:7,"word"])
@@ -246,7 +209,7 @@ if plot_all :
     plotly.offline.iplot({"data":dist, "layout":graph_objs.Layout(title="Top words in built wordlist")})
 
 
-# In[70]:
+# In[12]:
 
 
 data = TwitterData_BagOfWords(data)
@@ -257,14 +220,14 @@ print('The bow\n'+str(bow.head(10)))
 print('----------------------------------------------------------------------\n\n')
 
 
-# In[71]:
+# In[13]:
 
 
 if plot_all :
 
     grouped = bow.groupby(["label"]).sum()
     words_to_visualize = []
-    sentiments = ['positive','negative']
+    sentiments = ['positive','negative','neutral']
     #get the most 7 common words for every sentiment
     for sentiment in sentiments:
         words = grouped.loc[sentiment,:]
@@ -289,7 +252,115 @@ if plot_all :
         })
 
 
-# In[72]:
+# In[14]:
+
+
+from sklearn import metrics 
+#from sklearn import preprocessing
+from sklearn.preprocessing import label_binarize
+import pandas as pd
+
+def log(x):
+    #can be used to write to log file
+    print(x)
+
+def test_classifier(X_train, y_train, X_test, y_test, classifier):
+    if __name__=='__main__':
+        log("")
+        log("===============================================")
+        classifier_name = str(type(classifier).__name__)
+        log("Testing " + classifier_name)
+        now = time()
+        list_of_labels = sorted(list(set(y_train)))
+        model = classifier.fit(X_train, y_train)
+        
+        log("Learing time {0}s".format(time() - now))
+        now = time()
+        predictions = model.predict(X_test)
+        log("Predicting time {0}s".format(time() - now))
+        
+        #log('auc-------------')
+        #log(str(predictions))
+        
+        #lb = preprocessing.LabelBinarizer()
+        #y_test_bynarized = lb.fit_transform(y_test)
+        #predictions_bynarized = lb.fit_transform(predictions)
+        #log(str(y_test_bynarized))
+        #log(str(predictions_bynarized))
+        
+        y_test_byn = []
+        for el in y_test:
+            if el == "positive" :
+                y_test_byn.append(2)
+            elif el == "neutral" :
+                y_test_byn.append(1)
+            else:
+                y_test_byn.append(0)
+    
+        predictions_bin = []
+        for el in predictions:
+            if el == "positive" :
+                predictions_bin.append(2)
+            elif el == "neutral" :
+                predictions_bin.append(1)
+            else:
+                predictions_bin.append(0)
+                
+        
+        
+        #log("Number of mistakes: %s" % (count))
+        
+        #y_test = label_binarize(y_test, classes=['positive', 'negative', 'neutral'])
+        #predictions = label_binarize(predictions, classes=['positive', 'negative', 'neutral'])
+        
+        #log("Y-test")
+        #log(str(y_test_byn[:30]))
+        #log("Prediction:")
+        #log(str(predictions_bin[:30]))
+
+        
+        
+        #fpr,tpr, thresholds = metrics.roc_curve(y_test, predictions) #pos_label = 'positive'
+        
+        
+        #log("FPR: " + str(fpr))
+        #log("TPR: " + str(tpr))
+        
+
+        precision = precision_score(y_test, predictions, average=None, pos_label=None, labels=list_of_labels)
+        recall = recall_score(y_test, predictions, average=None, pos_label=None, labels=list_of_labels)
+        accuracy = accuracy_score(y_test, predictions)
+        f1 = f1_score(y_test, predictions, average=None, pos_label=None, labels=list_of_labels)
+        log("=================== Results ===================")
+        log("             Negative    Neutral    Positive")
+        log("F1       " + str(f1))
+        log("Precision" + str(precision))
+        log("Recall   " + str(recall))
+        log("Accuracy " + str(accuracy))
+        log("===============================================")
+        
+        fpr,tpr, thresholds = metrics.roc_curve(y_test_byn, predictions_bin,pos_label = 2) #pos_label = 'positive'
+        roc_auc = metrics.auc(fpr, tpr)
+        log(str(roc_auc))
+        
+
+        return precision, recall, accuracy, f1
+
+def cv(classifier, X_train, y_train):
+    if __name__=='__main__':
+        log("===============================================")
+        classifier_name = str(type(classifier).__name__)
+        now = time()
+        log("Crossvalidating " + classifier_name + "...")
+        accuracy = [cross_val_score(classifier, X_train, y_train, cv=3, n_jobs=1)]
+        log("Crosvalidation completed in {0}s".format(time() - now))
+        log("Accuracy: " + str(accuracy[0]))
+        log("Average accuracy: " + str(np.array(accuracy[0]).mean()))
+        log("===============================================")
+        return accuracy
+
+
+# In[15]:
 
 
 '''
@@ -308,11 +379,11 @@ if do_BernoulliNB :
     nb_acc = cv(BernoulliNB(), bow.iloc[:,1:], bow.iloc[:,0])
 
 
-# In[73]:
+# In[16]:
 
 
 data = TwitterData_ExtraFeatures()
-data.initialize("data/train.txt")
+data.initialize("data/test_lan_ca.txt")
 data.build_features()
 data.cleanup(TwitterCleanuper())
 data.tokenize()         
@@ -339,18 +410,21 @@ if plot_all:
 
 
 
-# In[74]:
+# In[17]:
 
 
+#class_weight = 'balanced'
 if do_RandomForest :
+    
+    
     X_train, X_test, y_train, y_test = train_test_split(data_model.iloc[:, 1:], data_model.iloc[:, 0],
                                                         train_size=0.7, stratify=data_model.iloc[:, 0],
                                                         random_state=seed)
-    precision, recall, accuracy, f1 = test_classifier(X_train, y_train, X_test, y_test, RandomForestClassifier(random_state=seed,n_estimators=403,n_jobs=-1))
-    rf_acc = cv(RandomForestClassifier(n_estimators=403,n_jobs=-1, random_state=seed),data_model.iloc[:, 1:], data_model.iloc[:, 0])
+    precision, recall, accuracy, f1 = test_classifier(X_train, y_train, X_test, y_test, RandomForestClassifier(class_weight = 'balanced', random_state=seed,n_estimators=403,n_jobs=1))
+    rf_acc = cv(RandomForestClassifier(class_weight = 'balanced', n_estimators=403,n_jobs=1, random_state=seed),data_model.iloc[:, 1:], data_model.iloc[:, 0])
 
 
-# In[75]:
+# In[18]:
 
 
 word2vec = Word2VecProvider()
@@ -358,12 +432,12 @@ word2vec = Word2VecProvider()
 word2vec.load("data/embedding_file")
 
 
-# In[77]:
+# In[21]:
 
 
-similarity_columns = ["españa_similarity", "votarem_similarity", "catalexit_similarity"]
+similarity_columns = ["fobia_similarity", "votarem_similarity", "catalexit_similarity"]
 td = TwitterData()
-td.initialize("data/train.txt")
+td.initialize("data/test_lan_ca.txt")
 td.build_features()
 td.cleanup(TwitterCleanuper())
 td.tokenize()
@@ -430,8 +504,8 @@ if do_RandomForest_full_model :
                                                         random_state=seed)
 
 
-    precision, recall, accuracy, f1 = test_classifier(X_train, y_train, X_test, y_test, RandomForestClassifier(n_estimators=403,n_jobs=-1, random_state=seed))
-    rf_acc = cv(RandomForestClassifier(n_estimators=403,n_jobs=-1,random_state=seed),data_model.iloc[:, 1:], data_model.iloc[:, 0])
+    precision, recall, accuracy, f1 = test_classifier(X_train, y_train, X_test, y_test, RandomForestClassifier(class_weight = 'balanced',n_estimators=403,n_jobs=1, random_state=seed))
+    rf_acc = cv(RandomForestClassifier(class_weight = 'balanced',n_estimators=403,n_jobs=1,random_state=seed),data_model.iloc[:, 1:], data_model.iloc[:, 0])
 
 
 # In[ ]:
@@ -453,4 +527,3 @@ if do_XGBoost :
                                                         random_state=seed)
     precision, recall, accuracy, f1 = test_classifier(X_train, y_train, X_test, y_test, XGBoostClassifier(seed=seed))
     xgb_acc = cv(XGBoostClassifier(seed=seed),data_model.iloc[:, 1:], data_model.iloc[:, 0])
-

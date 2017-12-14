@@ -15,7 +15,7 @@ class TwitterData(TwitterData_ExtraFeatures):
         if not self.is_testing:
             label_column = ["label"]
 
-        columns = label_column + ["original_id"] + extra_columns + similarity_columns + list(map(lambda w: str(w) + "_bow",self.wordlist)) + list(range(0,6))
+        columns = label_column + ["original_id"] + extra_columns + similarity_columns + list(map(lambda w: str(w) + "_bow",self.wordlist)) + list(range(0,40))
         
         '''
         print('----------------------------------------------------------------------')
@@ -87,7 +87,7 @@ class TwitterData(TwitterData_ExtraFeatures):
         print('data model:'+str(columns))
         print('----------------------------------------------------------------------\n\n')
         self.data_model = pd.DataFrame(rows, columns=columns)
-        self.data_model = self.data_model.drop(labels=range(0,6),axis=1)
+        self.data_model = self.data_model.drop(labels=range(0,40),axis=1)
         self.data_labels = pd.Series(labels)
         
         
