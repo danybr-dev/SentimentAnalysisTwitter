@@ -54,12 +54,7 @@ plot_all = True
 
 
 data = TwitterData_Initialize()
-data.initialize("data/test_lan_ca.txt", is_spain = False)
-#data.initialize("data/train_original.txt", is_spain = True)
-#data.initialize("data/train_votarem.txt", is_spain = True)
-#data.initialize("data/train_no_votarem.txt", is_spain = True)
-#data.initialize("data/train_votarem_catalunya.txt", is_spain = True)
-#data.initialize("data/train_no_votarem_catalunya.txt", is_spain = True)
+data.initialize("data/train.txt", is_spain = False)
 
 #initial data 
 data.processed_data.head(10)
@@ -383,7 +378,7 @@ if do_BernoulliNB :
 
 
 data = TwitterData_ExtraFeatures()
-data.initialize("data/test_lan_ca.txt")
+data.initialize("data/train.txt")
 data.build_features()
 data.cleanup(TwitterCleanuper())
 data.tokenize()         
@@ -437,7 +432,7 @@ word2vec.load("data/embedding_file")
 
 similarity_columns = ["fobia_similarity", "votarem_similarity", "catalexit_similarity"]
 td = TwitterData()
-td.initialize("data/test_lan_ca.txt")
+td.initialize("data/train.txt")
 td.build_features()
 td.cleanup(TwitterCleanuper())
 td.tokenize()
