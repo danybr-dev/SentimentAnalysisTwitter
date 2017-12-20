@@ -9,14 +9,18 @@
 
 The purpose of this project is to build a model to predict the results of the referendum for catalan independence.
 
-**1 Step: collecting data** 
+**Step 1: collecting data** 
 
 Create the dataset collecting the tweet from twitter web page
 
-**2 Step: analysis** 
+**Step 2: analysis** 
 
 Use Jupyter Notebook files in order to clear and preprocess data, make prediction and train models, plot results
 
+==============
+**How does it work?**
+
+To be implemented
 
 ### Team
 
